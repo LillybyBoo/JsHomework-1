@@ -1,4 +1,5 @@
-const playerOne = {
+const player1 = {
+    player: 1,
     name: 'Scorpion',
     hp: 100,
     img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
@@ -8,7 +9,8 @@ const playerOne = {
     },
     };
 
-const playerTwo = {
+const player2 = {
+    player: 2,
     name: 'Sonya',
     hp: 100,
     img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
@@ -17,30 +19,39 @@ const playerTwo = {
         console.log(this.name +' '+ 'Fight...')
     },
     };
-function createPlayer() {
-    const $player1 = document.createElement('div');
-    $player1.classList.add('player1');
-    const $arenas = document.querySelector('.arenas');
-    $arenas.appendChild($player1);
-    const $progress = document.createElement('div');
-    $progress.classList.add('progressbar');
-    $player1.appendChild($progress);
-    const $char = document.createElement('div');
-    $char.classList.add('character');
-    $player1.appendChild($char);
-    const $life = document.createElement('div');
-    $life.classList.add('life');
-    $life.style.widht = '100%';
-    $progress.appendChild($life);
-    const $name = document.createElement('div');
-    $name.innerText = 'Scorpion'
-    $name.classList.add('name');
-    $progress.appendChild($name);
-    const $img = document.createElement('img');
-    $img.src = 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif';
-    $char.appendChild($img);
-  
-}
+
+
+
+    function createPlayer(gameClass, obj) {
+        const div = document.createElement("div");
+        div.classList.add(gameClass);
+        div.innerHTML = `
+          <div class="progressbar">
+              <div class="life">${obj.hp}</div>
+              <div class="name">${obj.name}</div>
+          </div>
+          <div class="character">
+              <img src="${obj.img}" />
+          </div>`;
+        const arenas = document.querySelector(".arenas");
+      
+        arenas.append(div);
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
