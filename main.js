@@ -61,9 +61,9 @@ const player2 = {
         player.hp = Math.floor(Math.random() * (player.hp - 0 + 1)) + 0;
         $playerLife.style.width = player.hp + '%';
 
-        if (player.hp > 0) {
+        if (player.hp < 1) {
             
-            $arenas.appendChild(playerWin(player.name));
+            $arenas.appendChild(playerlose(player.name));
         }
         
     }
