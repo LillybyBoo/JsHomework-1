@@ -1,41 +1,64 @@
-import {LOGS} from "./logs.js";
-import {player1, player2} from "./players.js";
-import {randomNum, createElement} from "./func.js";
-import {$formFight} from "./main.js";
+import {LOGS, HIT, ATTACK} from './consts.js';
+import {Player} from './players.js';
+import {randomNum, createElement, pullTime} from './func.js';
 
-export const $arenas = document.querySelector('.arenas');
+const $fightButton = document.querySelector('.button');
+const $arenas = document.querySelector('.arenas');
+const $chat = document.querySelector('.chat');
+const $formFight = document.querySelector('.control');
 
-export const $subButton = document.querySelector('.button');
+export class Game {
+    constructor() {
+        this.button = $fightButton
+        this.chat = $chat;
+        this.root = $arenas;
+        this.control = $formFight;
 
-export const $chat = document.querySelector('.chat');
+        this.player1 = new Player({
+            player: 1,
+            name: 'Scorpion',
+            hp: 100,
+            img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
+            rootSelector: 'arenas'
+        })
 
-const HIT = {
-    head: 30,
-    body: 25,
-    foot: 20,
-}
-
-const ATTACK = ['head', 'body', 'foot'];
-
-function enemyAttack() {
-    const hit = ATTACK [randomNum(0, 2)];
-    const defence = ATTACK [randomNum(0, 2)];
-
-    return {
-        value: randomNum(0, HIT[hit]),
-        hit,
-        defence,
-    };
-}
-
-function playerAttack(playerTurn) {
-    const attack = {
-        value: 0,
-        hit: '',
-        defence: '',
+        this.player2 = new Player({
+            player: 2,
+            name: 'Sonya',
+            hp: 100,
+            img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
+            rootSelector: 'arenas'
+        })
     }
-    if (playerTurn) {
-        for (let item of playerTurn) {
+
+    start = () => {
+        this.root.appendChild(this.player1.createPlayer());
+        this.root.appendChild(this.player2.createPlayer());
+
+        this.logMessage('start', this.player1, this.player2);
+
+        this.battle(this.player1, this.player2);
+
+    }
+
+    enemyAttack = () => {
+        const hit = ATTACK [randomNum(0, 2)];
+        const defence = ATTACK [randomNum(0, 2)];
+
+        return {
+            value: randomNum(0, HIT[hit]),
+            hit,
+            defence,
+        };
+    }
+
+    playerAttack = () => {
+        const attack = {
+            value: 0,
+            hit: '',
+            defence: '',
+        }
+        for (let item of this.control) {
             if (item.checked && item.name === 'hit') {
                 attack.value = randomNum(0, HIT[item.value]);
                 attack.hit = item.value;
@@ -45,115 +68,118 @@ function playerAttack(playerTurn) {
             }
             item.checked = false;
         }
+
+        return attack;
     }
-    return attack;
-}
 
-export const logMessage = (logType) => {
+    logMessage = (logType, damage) => {
+        let logText = '';
 
-    let logText = '';
-    const time = new Date();
-    const hours = pullTime(time.getHours());
-    const minutes = pullTime(time.getMinutes());
-    const seconds = pullTime(time.getSeconds());
+        const time = new Date();
+        const hours = pullTime(time.getHours());
+        const minutes = pullTime(time.getMinutes());
+        const seconds = pullTime(time.getSeconds());
 
-    const textType = logType.includes('start', 'draw') ? LOGS[logType] : LOGS[logType][randomNum(0, LOGS[logType].length - 1)];
+        const textType = logType.includes('start', 'draw') ? LOGS[logType] : LOGS[logType][randomNum(0, LOGS[logType].length - 1)];
 
-    switch (logType) {
-        case 'start':
-            logText = textType;
-            logText = logText.replace('[time]', `${hours}:${minutes}:${seconds}`);
-            logText = logText.replace('[player1]', player1.name);
-            logText = logText.replace('[player2]', player2.name);
-            break;
+        switch (logType) {
+            case 'start':
+                logText = textType;
+                logText = logText.replace('[time]', `${hours}:${minutes}:${seconds}`);
+                logText = logText.replace('[player1]', this.player1.name);
+                logText = logText.replace('[player2]', this.player2.name);
+                break;
 
-        case 'end':
-            logText = textType;
-            logText = logText.replace('[playerWins]', player1.name);
-            logText = logText.replace('[playerLose]', player2.name);
-            break;
+            case 'end':
+                logText = textType;
+                logText = logText.replace('[playerWins]', this.player1.name);
+                logText = logText.replace('[playerLose]', this.player2.name);
+                break;
 
-        case 'hit':
-            logText = textType;
-            logText = logText.replace('[playerKick]', player1.name);
-            logText = logText.replace('[playerDefence]', player2.name);
-            logText = `${hours}:${minutes}:${seconds}` + '  ' + `${logText}` + ` ${player1.name} : здоровье ${player1.hp} / 100.`;
-            break;
-        case 'defence':
-            logText = textType;
-            logText = logText.replace('[playerKick]', player2.name);
-            logText = logText.replace('[playerDefence]', player1.name);
-            logText = `${hours}:${minutes}:${seconds}` + '  ' + `${logText}` + ` ${player2.name} : здоровье ${player2.hp} / 100.`;
-            break;
+            case 'hit':
+                logText = textType;
+                logText = logText.replace('[playerKick]', this.player1.name);
+                logText = logText.replace('[playerDefence]', this.player2.name);
+                logText = `${hours}:${minutes}:${seconds}` + '  ' + `${logText}` + ` ${this.player1.name} урон  ${damage} : здоровье ${this.player1.hp} / 100.`;
+                break;
 
-        case 'draw':
-            break;
+            case 'defence':
+                logText = textType;
+                logText = logText.replace('[playerKick]', this.player2.name);
+                logText = logText.replace('[playerDefence]', this.player1.name);
+                logText = `${hours}:${minutes}:${seconds}` + '  ' + `${logText}` + ` ${this.player2.name} урон  ${damage} : здоровье ${this.player2.hp} / 100.`;
+                break;
+
+            case 'draw':
+                break;
+        }
+        this.chat.insertAdjacentHTML('afterbegin', `<p>${logText}</p>`)
     }
-    $chat.insertAdjacentHTML('afterbegin', `<p>${logText}</p>`)
-}
 
-const playerWin = (name) => {
-    const $winTitle = createElement('div', 'winTitle');
-    if (name) {
-        $winTitle.innerText = name + ' win';
-    } else {
-        $winTitle.innerText = 'draw';
+    battle = () => {
+        this.control.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const enemy = this.enemyAttack();
+            const player = this.playerAttack(this.control);
+
+            const dmg1 = player.hit === enemy.defence ? 0 : enemy.value;
+            const dmg2 = enemy.hit === player.defence ? 0 : player.value;
+
+            this.player1.changeHp(dmg1);
+            this.player2.changeHp(dmg2);
+
+            this.logMessage('hit', enemy.value, player.value);
+            this.logMessage('defence', player.value, enemy.value);
+
+            this.player1.renderHp(dmg1);
+            this.player2.renderHp(dmg2);
+
+            this.results()
+
+        })
     }
-    return $winTitle;
-}
 
-export const createReloadButton = () => {
-    const $reloadWrap = createElement('div', 'reloadWrap');
-    const $restartButton = createElement('button', 'button');
+    playerWin = (name) => {
+        const winTitle = createElement('div', 'winTitle');
 
-    $restartButton.innerText = 'Restart';
-    $restartButton.addEventListener('click', function () {
-        window.location.reload();
-    })
-    $reloadWrap.appendChild($restartButton);
-    $arenas.appendChild($reloadWrap);
-}
+        if (name) {
+            winTitle.innerText = name + ' wins';
+        } else {
+            winTitle.innerText = name + ' draw';
+        }
 
-export const results = () => {
-    if (player1.hp === 0 || player2.hp === 0) {
-        $subButton.disabled = true;
-        createReloadButton();
+        return winTitle;
+    };
+
+    createReloadButton = () => {
+        const $reloadWrap = createElement('div', 'reloadWrap');
+        const $restartButton = createElement('button', 'button');
+
+        $restartButton.innerText = 'Restart';
+        $restartButton.addEventListener('click', function () {
+            window.location.reload();
+        })
+        $reloadWrap.appendChild($restartButton);
+        this.root.appendChild($reloadWrap);
     }
-    if (player1.hp === 0 && player1.hp < player2.hp) {
-        $arenas.appendChild(playerWin(player2.name));
-        logMessage('end');
 
-    } else if (player2.hp === 0 && player2.hp < player1.hp) {
-        $arenas.appendChild(playerWin(player1.name));
-        logMessage('end');
+    results() {
+        if (this.player1.hp === 0 || this.player2.hp === 0) {
+            this.button.disabled = true;
+            this.createReloadButton();
+        }
+        if (this.player1.hp === 0 && this.player1.hp < this.player2.hp) {
+            this.root.appendChild(this.playerWin(this.player2.name));
+            this.logMessage('end');
 
-    } else if (player1.hp === 0 && player2.hp === 0) {
-        $arenas.appendChild(playerWin());
-        logMessage('draw');
+        } else if (this.player2.hp === 0 && this.player2.hp < this.player1.hp) {
+            this.root.appendChild(this.playerWin(this.player1.name));
+            this.logMessage('end');
+
+        } else if (this.player1.hp === 0 && this.player2.hp === 0) {
+            this.root.appendChild(this.playerWin());
+            this.logMessage('draw');
+        }
     }
 }
-
-export function battle(player1, player2) {
-    const enemy = enemyAttack();
-    const player = playerAttack($formFight);
-
-    const dmg1 = player.hit === enemy.defence ? 0 : enemy.value;
-    const dmg2 = enemy.hit === player.defence ? 0 : player.value;
-
-    player1.changeHp(dmg1);
-    player2.changeHp(dmg2);
-
-
-    logMessage('hit');
-    logMessage('defence');
-
-    player1.renderHp(dmg1);
-    player2.renderHp(dmg2);
-}
-
-function pullTime(str) {
-    return +str < 10 ? `0${str}` : str
-}
-
-
-results();

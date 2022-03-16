@@ -1,3 +1,10 @@
+export const HIT = {
+    head: 30,
+    body: 25,
+    foot: 20,
+}
+
+export const ATTACK = ['head', 'body', 'foot'];
 
 export const LOGS = {
     start: 'Часы показывали [time], когда [player1] и [player2] бросили вызов друг другу.',
@@ -38,6 +45,3 @@ export const LOGS = {
     ],
     draw: 'Ничья - это тоже победа!'
 };
-
-
-

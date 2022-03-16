@@ -10,5 +10,7 @@ export const createElement = (tag, className) => {
     return $tag;
 }
 
-
+export const pullTime = (str) => {
+    return +str < 10 ? `0${str}` : str
+}
 
