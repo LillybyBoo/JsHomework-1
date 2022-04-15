@@ -241,6 +241,7 @@ body {
     font-family: "Mortal Kombat 3";
     outline: none;
 }
+
 .button::after {
     content: "";
     position: absolute;
@@ -252,12 +253,15 @@ body {
     border-radius: 4px;
     z-index: -1;
 }
+
 .button:hover {
     background-color: #f5d100;
 }
+
 .button:active {
     top: 2px;
 }
+
 .button:active::after {
     top: 1px;
 }
@@ -362,12 +366,15 @@ form:invalid button[class=button]:active::after {
     justify-content: space-between;
     color: #efefef;
 }
+
 .ul label {
     cursor: pointer;
 }
+
 .ul label:nth-of-type(2) {
     margin: 0 -4.5px;
 }
+
 .ul label span {
     position: relative;
     display: inline-block;
@@ -378,6 +385,7 @@ form:invalid button[class=button]:active::after {
     text-align: center;
     margin-top: -3px;
 }
+
 .ul label span::before {
     position: relative;
     display: block;
@@ -389,6 +397,7 @@ form:invalid button[class=button]:active::after {
     margin-bottom: -50px;
     transition: 0.3s;
 }
+
 .ul label span:hover {
     background-color: rgba(107, 185, 240, 0.2);
 }
@@ -396,15 +405,18 @@ form:invalid button[class=button]:active::after {
 input {
     display: none;
 }
+
 input[type=radio]:checked + label > span {
     color: #fff;
     font-weight: 700;
     text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 }
+
 input[type=radio]:checked + label > span::before {
     background: #f5d100;
     box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.2);
 }
+
 input[type=radio]:checked + label > span:hover {
     background: none;
 }

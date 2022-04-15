@@ -52,3 +52,5 @@ export class Player {
         return $player;
     }
 }
+
+export default Player;
